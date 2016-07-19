@@ -1,1 +1,1 @@
-web: gunicorn hackathon.wsgi --log-file=-
+web: gunicorn hackathon.wsgi --timeout 30 --log-file=-
