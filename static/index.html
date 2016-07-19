@@ -124,7 +124,10 @@ function create_map() {
             position: position,
             map: map,
             title: markers[i][0],
-			icon: marker_images[i]
+	    icon: {
+			marker_images[i],
+	    		scaledSize: new google.maps.Size(60, 60)
+		}
         });
 		
         // Allow each marker to have an info window    

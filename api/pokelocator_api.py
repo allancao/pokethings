@@ -173,20 +173,20 @@ def login_google(email,passw):
     third='https://accounts.google.com/signin/challenge/sl/password'
     last='https://accounts.google.com/o/oauth2/token'
     r=reqses.get(first)
-    
+
     GALX= re.search('<input type="hidden" name="GALX" value=".*">',r.content)
     gxf= re.search('<input type="hidden" name="gxf" value=".*:.*">',r.content)
     cont = re.search('<input type="hidden" name="continue" value=".*">',r.content)
-    
+
     GALX=re.sub('.*value="','',GALX.group(0))
     GALX=re.sub('".*','',GALX)
-    
+
     gxf=re.sub('.*value="','',gxf.group(0))
     gxf=re.sub('".*','',gxf)
-    
+
     cont=re.sub('.*value="','',cont.group(0))
     cont=re.sub('".*','',cont)
-    
+
     data1={'Page':'PasswordSeparationSignIn',
             'GALX':GALX,
             'gxf':gxf,
@@ -201,12 +201,12 @@ def login_google(email,passw):
             'Email':email,
             'signIn':'Next'}
     r1=reqses.post(second,data=data1)
-    
+
     profile= re.search('<input id="profile-information" name="ProfileInformation" type="hidden" value=".*">',r1.content)
     gxf= re.search('<input type="hidden" name="gxf" value=".*:.*">',r1.content)
     gxf=re.sub('.*value="','',gxf.group(0))
     gxf=re.sub('".*','',gxf)
-    
+
     profile=re.sub('.*value="','',profile.group(0))
     profile=re.sub('".*','',profile)
     data2={'Page':'PasswordSeparationSignIn',
@@ -227,11 +227,11 @@ def login_google(email,passw):
     r2=reqses.post(third,data=data2)
     fourth=r2.history[len(r2.history)-1].headers['Location'].replace('amp%3B','').replace('amp;','')
     r3=reqses.get(fourth)
-    
+
     client_id=re.search('client_id=.*&from_login',fourth)
     client_id= re.sub('.*_id=','',client_id.group(0))
     client_id= re.sub('&from.*','',client_id)
-    
+
     state_wrapper= re.search('<input id="state_wrapper" type="hidden" name="state_wrapper" value=".*">',r3.content)
     state_wrapper=re.sub('.*state_wrapper" value="','',state_wrapper.group(0))
     state_wrapper=re.sub('"><input type="hidden" .*','',state_wrapper)
@@ -323,16 +323,18 @@ def heartbeat(api_endpoint, access_token, response, login_type):
     return heartbeat
 
 def main(location=None):
-    
+
+    steps = os.environ.get('STEPS', 1)
+
     pokemons = json.load(open('api/pokemon.json'))
     ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
     ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
-            
+
     set_location(location)
-    
+
     login_type = "ptc"
     access_token = "fake"
-    
+
     try:
         f = open('access_token.json','r')
         cached_token_info = json.loads(f.read())
@@ -341,11 +343,11 @@ def main(location=None):
         access_token = cached_token_info['access_token']
     except:
         pass
-    
+
     api_endpoint = get_api_endpoint(login_type, access_token)
     if api_endpoint == "https:///rpc":
         print "BAD CACHE"
-    
+
         login_type = "ptc"
         try:
             access_token = login_ptc(ptc_username, ptc_password)
@@ -354,28 +356,28 @@ def main(location=None):
         print "access_token", access_token
         if access_token is None:
             print('[-] Trouble logging in via PTC')
-            
+
             print('[+] Authentication with google...')
             goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
             goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
             access_token = login_google(goog_username, goog_password)
             login_type = "google"
-            
+
         f = open('access_token.json','w')
         f.write(json.dumps({
             "access_token": access_token,
             "login_type": login_type
-        })) 
+        }))
         f.close()
-        
+
         print('[+] RPC Session Token: {} ...'.format(access_token[:25]))
 
         api_endpoint = get_api_endpoint(login_type, access_token)
     else:
         print "Login cache is good!"
-        
+
     print "api_endpoint", api_endpoint
-        
+
     if api_endpoint is None:
         print('[-] RPC server offline')
         return
@@ -403,7 +405,7 @@ def main(location=None):
     nearby_pokes = []
 
     origin = LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)
-    while True:
+    for step in range(steps):
         original_lat = FLOAT_LAT
         original_long = FLOAT_LONG
         parent = CellId.from_lat_lng(LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)).parent(15)
@@ -456,15 +458,18 @@ def main(location=None):
                 "longitude": poke.Longitude,
                 "time_left": poke.TimeTillHiddenMs / 1000,
                 "distance": int(origin.get_distance(other).radians * 6366468.241830914),
-                "direction": direction
+                "direction": direction,
+                "step": step+1
             })
-
             print("(%s) %s is visible at (%s, %s) for %s seconds (%sm %s from you)" % (poke.pokemon.PokemonId, pokemons[poke.pokemon.PokemonId - 1]['Name'], poke.Latitude, poke.Longitude, poke.TimeTillHiddenMs / 1000, int(origin.get_distance(other).radians * 6366468.241830914), direction))
+            print('')
+            walk = getNeighbors()
+            next = LatLng.from_point(Cell(CellId(walk[2])).get_center())
+            set_location_coords(next.lat().degrees, next.lng().degrees, 0)
 
-        break
+        # break
 
     return nearby_pokes
 
 if __name__ == '__main__':
     main()
-    
