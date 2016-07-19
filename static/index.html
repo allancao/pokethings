@@ -28,7 +28,7 @@ var marker_images = [];
 var first_load = true;
 
 jQuery(function($) {
-    // Asynchronously Load the map API 
+    // Asynchronously Load the map API
     var script = document.createElement('script');
     script.src = "//maps.googleapis.com/maps/api/js?key=AIzaSyB-o4OvPl7F7f21_FImD29DA-WTuEwNDVc&sensor=false&callback=map_api_loaded";
     document.body.appendChild(script);
@@ -52,23 +52,23 @@ function build_initial_map(location) {
 }
 
 function build_map_update(location) {
-	$.ajax({ 
-		type: 'POST', 
-		url: '/get_poke', 
-		data: { location: location.coords.latitude.toString()+', '+location.coords.longitude.toString() }, 
+	$.ajax({
+		type: 'POST',
+		url: '/get_poke',
+		data: { location: location.coords.latitude.toString()+', '+location.coords.longitude.toString() },
 		dataType: 'json',
 		success: function (data) {
 			console.log("pokemon_data", data.data);
 			markers = [];
 			infoWindowContent = [];
 			marker_images = [];
-			
+
 			marker_obj = ["Ashe", location.coords.latitude,location.coords.longitude];
 			markers.push(marker_obj);
 			infoWindowContent_obj = ['<div class="info_content"><h3>You</h3></div>'];
 			infoWindowContent.push(infoWindowContent_obj);
 			marker_images.push("/static/poke/trainer.gif");
-			
+
 			$.each(data.data, function(k, v) {
 				marker_obj = [v.name, v.latitude,v.longitude];
 				markers.push(marker_obj);
@@ -108,15 +108,15 @@ function create_map() {
     var mapOptions = {
         mapTypeId: 'roadmap'
     };
-                    
+
     // Display a map on the page
     map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
     map.setTilt(45);
-        
+
     // Display multiple markers on a map
     var infoWindow = new google.maps.InfoWindow(), marker, i;
-    
-    // Loop through our array of markers & place each one on the map  
+
+    // Loop through our array of markers & place each one on the map
     for( i = 0; i < markers.length; i++ ) {
         var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
         bounds.extend(position);
@@ -124,13 +124,13 @@ function create_map() {
             position: position,
             map: map,
             title: markers[i][0],
-	    icon: {
-			marker_images[i],
-	    		scaledSize: new google.maps.Size(60, 60)
-		}
+      	    icon: {
+                  url: marker_images[i],
+    		          scaledSize: new google.maps.Size(60, 60)
+    	      }
         });
-		
-        // Allow each marker to have an info window    
+
+        // Allow each marker to have an info window
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
                 infoWindow.setContent(infoWindowContent[i][0]);
@@ -147,6 +147,6 @@ function create_map() {
         this.setZoom(18);
         google.maps.event.removeListener(boundsListener);
     });
-    
+
 }
 </script>
