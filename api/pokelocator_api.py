@@ -327,8 +327,10 @@ def main(location=None):
     steps = os.environ.get('STEPS', 1)
 
     pokemons = json.load(open('api/pokemon.json'))
-    ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
-    ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
+    # ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
+    # ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
+    ptc_username = "acao737"
+    ptc_password = "121314Pokemon!"
 
     set_location(location)
 
@@ -358,9 +360,10 @@ def main(location=None):
             print('[-] Trouble logging in via PTC')
 
             print('[+] Authentication with google...')
-            goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
-            goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
-
+            # goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
+            # goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
+            goog_username = "pokemongodev737"
+            goog_password = "121314Google!"
             access_token = login_google(goog_username, goog_password)
             login_type = "google"
 
@@ -407,7 +410,7 @@ def main(location=None):
     latlngs = []
     walk = sorted(getNeighbors())
     origin = LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)
-    for step in range(0, len(walk), 2):
+    for step in range(0, len(walk), 1):
     # for step in steps:
         original_lat = FLOAT_LAT
         original_long = FLOAT_LONG
@@ -454,23 +457,24 @@ def main(location=None):
             difflng = diff.lng().degrees
             direction = (('N' if difflat >= 0 else 'S') if abs(difflat) > 1e-4 else '')  + (('E' if difflng >= 0 else 'W') if abs(difflng) > 1e-4 else '')
 
-            nearby_pokes.append({
-                "id": poke.pokemon.PokemonId,
-                "name": pokemons[poke.pokemon.PokemonId - 1]['Name'],
-                "latitude": poke.Latitude,
-                "longitude": poke.Longitude,
-                "time_left": poke.TimeTillHiddenMs / 1000,
-                "distance": int(origin.get_distance(other).radians * 6366468.241830914),
-                "direction": direction,
-                "step": step+1
-            })
-            print("(%s) %s is visible at (%s, %s) for %s seconds (%sm %s from you)" % (poke.pokemon.PokemonId, pokemons[poke.pokemon.PokemonId - 1]['Name'], poke.Latitude, poke.Longitude, poke.TimeTillHiddenMs / 1000, int(origin.get_distance(other).radians * 6366468.241830914), direction))
-            print('')
+            if poke.pokemon.PokemonId != 96 and poke.pokemon.PokemonId != 124:
+                nearby_pokes.append({
+                    "id": poke.pokemon.PokemonId,
+                    "name": pokemons[poke.pokemon.PokemonId - 1]['Name'],
+                    "latitude": poke.Latitude,
+                    "longitude": poke.Longitude,
+                    "time_left": poke.TimeTillHiddenMs / 1000,
+                    "distance": int(origin.get_distance(other).radians * 6366468.241830914),
+                    "direction": direction,
+                    "step": step+1
+                })
+                print("(%s) %s is visible at (%s, %s) for %s seconds (%sm %s from you)" % (poke.pokemon.PokemonId, pokemons[poke.pokemon.PokemonId - 1]['Name'], poke.Latitude, poke.Longitude, poke.TimeTillHiddenMs / 1000, int(origin.get_distance(other).radians * 6366468.241830914), direction))
+                print('')
 
         # walk = getNeighbors()
         next = LatLng.from_point(Cell(CellId(walk[step])).get_center())
         set_location_coords(next.lat().degrees, next.lng().degrees, 0)
-        latlngs.append(next)
+        latlngs.append([next.lat().degrees, next.lng().degrees])
         print latlngs
 
         # break
