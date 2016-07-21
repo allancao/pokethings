@@ -327,8 +327,10 @@ def main(location=None):
     steps = os.environ.get('STEPS', 1)
 
     pokemons = json.load(open('api/pokemon.json'))
-    ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
-    ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
+    # ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
+    # ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
+    ptc_username = "acao737"
+    ptc_password = "121314Pokemon!"
 
     set_location(location)
 
@@ -358,8 +360,10 @@ def main(location=None):
             print('[-] Trouble logging in via PTC')
 
             print('[+] Authentication with google...')
-            goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
-            goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
+            # goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
+            # goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
+            goog_username = "pokemongodev737"
+            goog_password = "121314Google!"
             access_token = login_google(goog_username, goog_password)
             login_type = "google"
 
