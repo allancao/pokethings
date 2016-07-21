@@ -327,10 +327,8 @@ def main(location=None):
     steps = os.environ.get('STEPS', 1)
 
     pokemons = json.load(open('api/pokemon.json'))
-    # ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
-    # ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
-    ptc_username = "acao737"
-    ptc_password = "121314Pokemon!"
+    ptc_username = os.environ.get('PTC_USERNAME', "Invalid")
+    ptc_password = os.environ.get('PTC_PASSWORD', "Invalid")
 
     set_location(location)
 
@@ -360,10 +358,9 @@ def main(location=None):
             print('[-] Trouble logging in via PTC')
 
             print('[+] Authentication with google...')
-            # goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
-            # goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
-            goog_username = "pokemongodev737"
-            goog_password = "121314Google!"
+            goog_username = os.environ.get('GOOG_USERNAME', "Invalid")
+            goog_password = os.environ.get('GOOG_PASSWORD', "Invalid")
+
             access_token = login_google(goog_username, goog_password)
             login_type = "google"
 
@@ -410,7 +407,7 @@ def main(location=None):
     latlngs = []
     walk = sorted(getNeighbors())
     origin = LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)
-    for step in range(0, len(walk), 1):
+    for step in range(0, len(walk), 2):
     # for step in steps:
         original_lat = FLOAT_LAT
         original_long = FLOAT_LONG
