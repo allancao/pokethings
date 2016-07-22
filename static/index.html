@@ -52,6 +52,7 @@ function build_initial_map(location) {
 }
 
 function build_map_update(location) {
+<<<<<<< Updated upstream
 	$.ajax({
 		type: 'POST',
 		url: '/get_poke',
@@ -91,6 +92,80 @@ function build_map_update(location) {
 			}, 5000);
 		}
 	});
+=======
+
+    var poke_success = function(data) {
+        console.log("pokemon_data", data.data);
+        markers = [];
+        infoWindowContent = [];
+        marker_images = [];
+
+        marker_obj = ["Ashe", location.coords.latitude,location.coords.longitude];
+        markers.push(marker_obj);
+        infoWindowContent_obj = ['<div class="info_content"><h3>Red</h3></div>'];
+        infoWindowContent.push(infoWindowContent_obj);
+        marker_images.push("/static/poke/trainer.gif");
+
+        $.each(data.data, function(k, v) {
+            marker_obj = [v.name, v.latitude,v.longitude];
+            markers.push(marker_obj);
+            infoWindowContent_obj = ['<div class="info_content">' +
+                '<h3>'+v.name+'</h3>' +
+                '<p>will be there for another '+v.time_left+' seconds.</p>' +
+                '</div>'
+            ];
+            infoWindowContent.push(infoWindowContent_obj);
+            marker_images.push("/static/poke/"+v.id+".ico");
+        })
+    }
+
+    var poke_failure = function() {
+        console.log('Error while attempting to retrieve poke locations');
+        setTimeout(function(){
+            navigator.geolocation.getCurrentPosition(handler);
+        }, 5000);
+    }
+
+    <!--var degree_dif = 0.00026404631895;-->
+    var degree_dif = 0.0005280926379;
+    var c_point = { location: location.coords.latitude.toString()+
+                ', '+location.coords.longitude.toString() }
+    var n_point = { location: (location.coords.latitude+degree_dif).toString()+
+                ', '+location.coords.longitude.toString() }
+    var s_point = { location: (location.coords.latitude-degree_dif).toString()+
+                ', '+location.coords.longitude.toString() }
+    var e_point = { location: location.coords.latitude.toString()+
+                ', '+(location.coords.longitude+degree_dif).toString() }
+    var w_point = { location: location.coords.latitude.toString()+
+                ', '+(location.coords.longitude-degree_dif).toString() }
+    var ne_point = { location: (location.coords.latitude+degree_dif).toString()+
+                ', '+(location.coords.longitude+degree_dif).toString() }
+    var nw_point = { location: (location.coords.latitude+degree_dif).toString()+
+                ', '+(location.coords.longitude-degree_dif).toString() }
+    var se_point = { location: (location.coords.latitude-degree_dif).toString()+
+                ', '+(location.coords.longitude+degree_dif).toString() }
+    var sw_point = { location: (location.coords.latitude-degree_dif).toString()+
+                ', '+(location.coords.longitude-degree_dif).toString() }
+
+    $.when(
+        $.post( '/get_poke',c_point,poke_success).fail(poke_failure),
+        $.post( '/get_poke',n_point,poke_success).fail(poke_failure),
+        $.post( '/get_poke',e_point,poke_success).fail(poke_failure)
+        <!--$.post( '/get_poke',s_point,poke_success).fail(poke_failure)-->
+        <!--$.post( '/get_poke',w_point,poke_success).fail(poke_failure)-->
+    ).then(function() {
+        setTimeout(function(){
+            $('#map_canvas').html('');
+            create_map();
+            console.log(c_point);
+            console.log(n_point);
+            console.log(s_point);
+            setTimeout(function(){
+                navigator.geolocation.getCurrentPosition(handler);
+            }, 60000);
+        }, 30000);
+    })
+>>>>>>> Stashed changes
 }
 
 function handler(location) {

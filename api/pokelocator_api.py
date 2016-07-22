@@ -333,6 +333,7 @@ def main(location=None):
     ptc_password = "121314Pokemon!"
 
     set_location(location)
+    print('----------------LOCATION HERE:' + location)
 
     login_type = "ptc"
     access_token = "fake"
@@ -408,10 +409,11 @@ def main(location=None):
 
     nearby_pokes = []
     latlngs = []
-    walk = sorted(getNeighbors())
+    # walk = sorted(getNeighbors())
     origin = LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)
-    for step in range(0, len(walk), 1):
+    # for step in range(0, len(walk), 1):
     # for step in steps:
+    while True:
         original_lat = FLOAT_LAT
         original_long = FLOAT_LONG
         parent = CellId.from_lat_lng(LatLng.from_degrees(FLOAT_LAT, FLOAT_LONG)).parent(15)
@@ -465,19 +467,19 @@ def main(location=None):
                     "longitude": poke.Longitude,
                     "time_left": poke.TimeTillHiddenMs / 1000,
                     "distance": int(origin.get_distance(other).radians * 6366468.241830914),
-                    "direction": direction,
-                    "step": step+1
+                    "direction": direction
+                    # "step": step+1
                 })
                 print("(%s) %s is visible at (%s, %s) for %s seconds (%sm %s from you)" % (poke.pokemon.PokemonId, pokemons[poke.pokemon.PokemonId - 1]['Name'], poke.Latitude, poke.Longitude, poke.TimeTillHiddenMs / 1000, int(origin.get_distance(other).radians * 6366468.241830914), direction))
                 print('')
 
         # walk = getNeighbors()
-        next = LatLng.from_point(Cell(CellId(walk[step])).get_center())
-        set_location_coords(next.lat().degrees, next.lng().degrees, 0)
-        latlngs.append([next.lat().degrees, next.lng().degrees])
-        print latlngs
+        # next = LatLng.from_point(Cell(CellId(walk[2])).get_center())
+        # set_location_coords(next.lat().degrees, next.lng().degrees, 0)
+        # latlngs.append([next.lat().degrees, next.lng().degrees])
+        # print latlngs
 
-        # break
+        break
 
     return nearby_pokes
 
