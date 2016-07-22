@@ -52,47 +52,6 @@ function build_initial_map(location) {
 }
 
 function build_map_update(location) {
-<<<<<<< Updated upstream
-	$.ajax({
-		type: 'POST',
-		url: '/get_poke',
-		data: { location: location.coords.latitude.toString()+', '+location.coords.longitude.toString() },
-		dataType: 'json',
-		success: function (data) {
-			console.log("pokemon_data", data.data);
-			markers = [];
-			infoWindowContent = [];
-			marker_images = [];
-
-			marker_obj = ["Ashe", location.coords.latitude,location.coords.longitude];
-			markers.push(marker_obj);
-			infoWindowContent_obj = ['<div class="info_content"><h3>You</h3></div>'];
-			infoWindowContent.push(infoWindowContent_obj);
-			marker_images.push("/static/poke/trainer.gif");
-
-			$.each(data.data, function(k, v) {
-				marker_obj = [v.name, v.latitude,v.longitude];
-				markers.push(marker_obj);
-				infoWindowContent_obj = ['<div class="info_content">' +
-		'<h3>'+v.name+'</h3>' +
-		'<p>will be there for another '+v.time_left+' seconds.</p>' +        '</div>'];
-				infoWindowContent.push(infoWindowContent_obj);
-				marker_images.push("/static/poke/"+v.id+".ico");
-			});
-			$('#map_canvas').html('');
-			create_map();
-			setTimeout(function(){
-				navigator.geolocation.getCurrentPosition(handler);
-			}, 30000);
-		},
-		error: function() {
-			console.log('Error while attempting to retrieve poke locations');
-			setTimeout(function(){
-				navigator.geolocation.getCurrentPosition(handler);
-			}, 5000);
-		}
-	});
-=======
 
     var poke_success = function(data) {
         console.log("pokemon_data", data.data);
@@ -165,7 +124,6 @@ function build_map_update(location) {
             }, 60000);
         }, 30000);
     })
->>>>>>> Stashed changes
 }
 
 function handler(location) {
